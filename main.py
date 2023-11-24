@@ -3,13 +3,12 @@ Greeting = ('У этого калькулятора есть несколько 
 GreetingMath = ('Арабские цифры', 'Сложение — "+"', 'Вычитаение — "-"', 'Умножение — "*"', 'Деление — "/"',
                 '\nВозведение в степень — "^"', 'Факториал — "!"', 'Квадратный корень — "√(" (ALT + Num251)',
                 '\nЧисло π — "Pi"', 'Математическую константу — "E"', 'А также: sin, cos, tan, ln, lg')
-MathConvertions = {'√': 'isqrt', 'ln': 'log(2.71828182846, ', 'lg': 'log10( ', 'Pi': 'pi( ', 'E': 'e( '}
+MathConvertions = {'√': 'isqrt', 'ln': 'log(2.71828182846, ', 'lg': 'log10( ', 'Pi': 'pi ', 'E': 'e '}
 OtherMathAct = ("sin", "cos", "tan")
 GreetingLength = ('Поддерживаемые единицы измерения:', 'Километр — км', 'Метр — м', 'Дециметр — дм', 'Сантиметр — см',
                   '\nМиллиметр — мм', 'Микрометр — мкм', 'Нанометр — нм', "Пример: 2 см дм")
 LenghtGraph = {'нм': 0, "мкм": 1, "мм": 2, "см": 3, "дм": 4, "м": 5, "км": 6}
 LenghtGraphConvertations = {0: 1000, 1: 1000, 2: 10, 3: 10, 4: 10, 5: 10, 6: 1000}
-
 
 def Math(expression: str):  # Математический калькулятор
     # замена клавиатурного возведения в степень в python
@@ -20,12 +19,13 @@ def Math(expression: str):  # Математический калькулято�
 
     # косинусы, синусы, тангенсы
     for value in OtherMathAct:
-        expression.replace(value, f" math.{value}")
+        if value in expression:
+            expression = expression.replace(value, f" math.{value}")
 
     # факториал
-    pastStr = 0
+    pastStr = expression[:expression.index('!')]
     for _ in range(expression.count('!')):
-        pastStr = expression[len(pastStr) - 1:expression[len(pastStr) - 1:].index('!')]
+        print(pastStr, '----')
         temp = ''
         if pastStr[-1] == ')':  # Если факториал в скобках
             i = 0
@@ -39,13 +39,16 @@ def Math(expression: str):  # Математический калькулято�
                     temp = temp[::-1]
                     break
         else:
-            for el in expression[-2::-1]:
+            for el in pastStr[::-1]:
                 if el.isdigit():
                     temp += el
                 else:
+                    temp = temp[::-1]
                     break
-        expression = expression.replace(f'{temp}!', f'math.factorial({temp})', 1)
-
+        expression = expression.replace(f'{temp}!', f' math.factorial({temp}) ', 1)
+        pastStr = expression[expression[::-1].index('lairotcaf'):]
+        print(pastStr, '+++++++++')
+    print(expression)
     try:
         result = f"Результат: {eval(expression)}"
     except SyntaxError or NameError:
@@ -67,12 +70,13 @@ def MathLength(number1: str):
         while Place1 != Place2:
             Place1 += 1
             number1 = number1 / LenghtGraphConvertations[Place1]
+            print(number1)
     elif Place1 > Place2:
         while Place1 != Place2:
             Place1 -= 1
             number1 = number1 * LenghtGraphConvertations[Place1]
 
-    return f'Результат: {number1} {magnitude2}'
+    return f'Результат: {'{:.6g}'.format(number1)} {magnitude2}'
 
 if __name__ == '__main__':
     for el in Greeting:
