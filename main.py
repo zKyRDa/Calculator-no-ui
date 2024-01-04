@@ -92,12 +92,13 @@ def Profit(Summa: float, Deadline: int, Begin: str, Bet: int, Capitalization: bo
     schedule = ['Дата        Начислено процентов    Изменение баланса	Выплата	    Баланс', # Таблица
                f"{Begin}  0 ₽{' ' * 19} + {Summa} ₽ {' ' * (15 - len(str(Summa)))} 0 ₽ {' ' * 7} {Summa} ₽"]
     Accrued = 0 # Всего начислено
-    EndDeadline = month + Deadline
-    while month != EndDeadline:
+    i = 0
+    while i != Deadline:
+        i += 1
         month += 1
         if month == 13:
             year += 1
-            month = 0
+            month = 1
         Adding = round(Summa / 100 * Bet / 12, 2) # начисляемый процент за 1 месяц
         if Capitalization:
             BalanceСhange = Adding 
@@ -135,8 +136,6 @@ def Hello():
             print('Капитализация — свойство вклада, при котором начисленные проценты не отдаются на руки держателю,',
                   '\nа прибавляются к вкладу. Таким образом сумма вклада растет с каждой выплатой процентов.')
             Capitalization = True if input("Капитализация процентов (да/нет): ") == 'да' else False
-            print('Варианты периодичности: в конце срока — 1, каждый день — 2, каждую неделю — 3,',
-                  '\nраз в месяц — 4, раз в квартал — 5, раз в полгода — 6, раз в год — 7')
             table, Increase = Profit(Summa, DeadLine, Begin, Bet, Capitalization)
             print('', *table, Increase, '', sep='\n')
         elif mode == "стоп":
