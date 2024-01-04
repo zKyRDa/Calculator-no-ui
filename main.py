@@ -1,6 +1,7 @@
 import math
+import datetime
 Greeting = ('У этого калькулятора есть несколько режимов работы:', 'Обычный калькулятор — 1', 'Конвертация длины — 2',
-            'Конвертация масс — 3', 'Чтобы остановить программу введите "стоп" (без кавычек)')
+            'Конвертация масс — 3', 'Калькулятор вкладов — 4', 'Чтобы остановить программу введите "стоп" (без кавычек)')
 GreetingMath = ('Арабские цифры', 'Сложение — "+"', 'Вычитаение — "-"', 'Умножение — "*"', 'Деление — "/"',
                 '\nВозведение в степень — "^"', 'Факториал — "!"', 'Квадратный корень — "√(" (ALT + Num251)',
                 '\nЧисло π — "Pi"', 'Математическую константу — "E"', 'А также: sin, cos, tan, ln, lg')
@@ -13,7 +14,7 @@ LenghtGraph = {'нм': 0, "мкм": 1, "мм": 2, "см": 3, "дм": 4, "м": 5,
 LenghtGraphConvertations = {0: 1000, 1: 1000, 2: 10, 3: 10, 4: 10, 5: 10, 6: 1000}
 
 GreetingMass = ('Поддерживаемые единицы измерения:', "Миллиграмм - мг", "Микрограмм — мкг", 'Грамм — г',
-                'Килограмм — кг', "Тонна - т", "Центнер - ц", "Карат - кр")
+                'Килограмм — кг', "Тонна - т", "Центнер - ц", "Карат - кр", "Пример: 2 г кг")
 MassGraph = {'мкг': 0, "мг": 1, "г": 2, "кг": 3, "т": 4, "ц": 5, "кр": 6} # ДОДЕЛАТЬ
 MassGraphConvertations = {0: 1000, 1: 1000, 2: 1000, 3: 1000, 4: 1000, 5: 10, 6: 500000}
 
@@ -85,28 +86,61 @@ def MathLength(number: str, mode: int): # mode 1 - длина, 2 - масса
 
     return f'Результат: {number} {magnitude2}'
 
+def Profit(Summa: float, Deadline: int, Begin: str, Bet: int, Capitalization: bool):
+    InitialSumma = Summa
+    day, month, year = int(Begin.split('/')[0]), int(Begin.split('/')[1]), int(Begin.split('/')[2])
+    schedule = ['Дата        Начислено процентов    Изменение баланса	Выплата	    Баланс', # Таблица
+               f"{Begin}  0 ₽{' ' * 19} + {Summa} ₽ {' ' * (15 - len(str(Summa)))} 0 ₽ {' ' * 7} {Summa} ₽"]
+    Accrued = 0 # Всего начислено
+    EndDeadline = month + Deadline
+    while month != EndDeadline:
+        month += 1
+        if month == 13:
+            year += 1
+            month = 0
+        Adding = round(Summa / 100 * Bet / 12, 2) # начисляемый процент за 1 месяц
+        if Capitalization:
+            BalanceСhange = Adding 
+            Summa += BalanceСhange
+            Payout = 0
+        else:
+            BalanceСhange = 0
+            Payout = Adding
+        Accrued += Adding
+        schedule.append(f'{day if day >= 10 else "0"+str(day)}/{month if month >= 10 else "0"+str(month)}/{year}  {Adding} ₽ {" " * (19 - len(str(Adding)))} + {BalanceСhange} ₽{" " * (16 - len(str(BalanceСhange)))} {Payout} ₽ {" " * (8 - len(str(Payout)))} {Summa} ₽') # страшно выглядящае заполнение таблицы
+    schedule.append(f'Итого:      {Accrued} ₽ {" " * (52 - len(str(Accrued)))} {Summa} ₽')
+
+    Increase = f"Прирост капиталла {int((Summa - InitialSumma) / InitialSumma * 100)} %"
+    return schedule, Increase
+
 def Hello():
     while True:
-        for el in Greeting:
-            print(el, sep='\n')
+        print(*Greeting, sep='\n')
         mode = input('Выберите режим: ')
         if mode == '1':
-            print('Калькулятор поддерживает:')
-            for el in GreetingMath:
-                print(el, end=', ')
-            print('\nПример: 2.1+8^2-cos(6+Pi)*(80!-√(250))')
+            print('Калькулятор поддерживает:', *GreetingMath, '\nПример: 2.1+8^2-cos(6+Pi)*(80!-√(250))')
             print(Math(input("\nВведите выражение:\n")))
         elif mode == '2':
-            for el in GreetingLength:
-                print(el, end=', ')
+            print(*GreetingLength, sep=', ')
             print(MathLength(input("\nВедите число, единицу измерения вашего числа и во что перевести:\n"), 1))
         elif mode == '3':
-            for el in GreetingMass:
-                print(el, end=', ')
+            print(*GreetingMass, sep=', ')
             print(MathLength(input("\nВедите число, единицу измерения вашего числа и во что перевести:\n"), 2))
+        elif mode == '4':
+            Summa = float(input("Сумма вклада (₽): "))
+            DeadLine = int(input("Срок размещения (мес.): "))
+            Begin = input("Начало срока (сегодня / день/месяц/год): ")
+            Begin = datetime.datetime.today().strftime("%d/%m/%Y") if Begin == 'сегодня' else Begin
+            Bet = int(input("Процентная ставка (%): "))
+            print('Капитализация — свойство вклада, при котором начисленные проценты не отдаются на руки держателю,',
+                  '\nа прибавляются к вкладу. Таким образом сумма вклада растет с каждой выплатой процентов.')
+            Capitalization = True if input("Капитализация процентов (да/нет): ") == 'да' else False
+            print('Варианты периодичности: в конце срока — 1, каждый день — 2, каждую неделю — 3,',
+                  '\nраз в месяц — 4, раз в квартал — 5, раз в полгода — 6, раз в год — 7')
+            table, Increase = Profit(Summa, DeadLine, Begin, Bet, Capitalization)
+            print('', *table, Increase, '', sep='\n')
         elif mode == "стоп":
             break
     
-
 if __name__ == '__main__':
     Hello()
