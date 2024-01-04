@@ -23,9 +23,8 @@ def Math(expression: str):  # Математический калькулято�
             expression = expression.replace(value, f" math.{value}")
 
     # факториал
-    pastStr = expression[:expression.index('!')]
     for _ in range(expression.count('!')):
-        print(pastStr, '----')
+        pastStr = expression[:expression.index('!')]
         temp = ''
         if pastStr[-1] == ')':  # Если факториал в скобках
             i = 0
@@ -46,9 +45,7 @@ def Math(expression: str):  # Математический калькулято�
                     temp = temp[::-1]
                     break
         expression = expression.replace(f'{temp}!', f' math.factorial({temp}) ', 1)
-        pastStr = expression[expression[::-1].index('lairotcaf'):]
-        print(pastStr, '+++++++++')
-    print(expression)
+
     try:
         result = f"Результат: {eval(expression)}"
     except SyntaxError or NameError:
@@ -56,9 +53,9 @@ def Math(expression: str):  # Математический калькулято�
 
     return result
 
-def MathLength(number1: str):
+def MathLength(number: str):
 
-    number1, Place1, magnitude2 = float(number1.split()[0]), number1.split()[1], number1.split()[2]
+    number, Place1, magnitude2 = float(number.split()[0]), number.split()[1], number.split()[2]
 
     try:
         Place1 = LenghtGraph[Place1]
@@ -69,14 +66,23 @@ def MathLength(number1: str):
     if Place1 < Place2:
         while Place1 != Place2:
             Place1 += 1
-            number1 = number1 / LenghtGraphConvertations[Place1]
-            print(number1)
+            number = number / LenghtGraphConvertations[Place1]
     elif Place1 > Place2:
         while Place1 != Place2:
             Place1 -= 1
-            number1 = number1 * LenghtGraphConvertations[Place1]
+            number = number * LenghtGraphConvertations[Place1]
 
-    return f'Результат: {'{:.6g}'.format(number1)} {magnitude2}'
+    return f'Результат: {number} {magnitude2}'
+
+def Hello():
+    mode = input('Выберите режим: ')
+    if mode == '1':
+        print(Math(input("\nВведите выражение:\n")))
+    elif mode == '2':
+        for el in GreetingLength:
+            print(el, end=', ')
+        print(MathLength(input("\nВедите число, единицу измерения вашего числа и во что перевести:\n")))
+
 
 if __name__ == '__main__':
     for el in Greeting:
